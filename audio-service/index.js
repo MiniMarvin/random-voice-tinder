@@ -8,8 +8,17 @@ const audioService = (region) => {
   // Change this value to adjust the signed URL's expiration
   const URL_EXPIRATION_SECONDS = 300
 
-  const getSignedURL = async function(bucket, path, contentType, shouldUpload) {
-    const Key = path
+  /**
+   * Get a signed URL with timeout for the users to be able to upload and retrieve data from the bucket.
+   * @param {string} bucket The bucket where the operation is desired.
+   * @param {string} filePath The bucket file path to the user to get info.
+   * @param {string} contentType The content type of the file that the user is uploading.
+   * @param {boolean} shouldUpload Defines if the link is for uploading or retrieving data.
+   * @returns {Promise<{uploadURL: string, path: string}>}
+   */
+  const getSignedURL = async function(bucket, filePath, contentType, shouldUpload) {
+    const Key = filePath
+
     // Get signed URL from S3
     const s3Params = {
       Bucket: bucket,
@@ -24,7 +33,7 @@ const audioService = (region) => {
 
     return JSON.stringify({
       uploadURL: uploadURL,
-      Key
+      path: Key
     })
   }
 }
