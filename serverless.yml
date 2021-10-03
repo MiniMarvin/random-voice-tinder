@@ -52,67 +52,76 @@ functions:
 # you can add CloudFormation resource templates here
 resources:
   Resources:
-    NewResource:
+    S3Audios:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: random-voice-tinder-audios
-    NewResource:
+        Tags:
+          - Key: service
+            Value: random-voice-tinder
+    DynamoUsers:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: "random-voice-tinder-users"
+        BillingMode: "PAY_PER_REQUEST"
         AttributeDefinitions:
           - AttributeName: "id"
             AttributeType: "S"
-          - AttributeName: "name"
-            AttributeType: "S"
-          - AttributeName: "chats"
-            AttributeType: "SS"
+          # - AttributeName: "name"
+          #   AttributeType: "S"
+          # - AttributeName: "chats"
+          #   AttributeType: "SS"
         KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
         Tags:
-          - random-voice-tinder
-    NewResource:
+          - Key: service
+            Value: random-voice-tinder
+    DynamoChats:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: "random-voice-tinder-chats"
+        BillingMode: "PAY_PER_REQUEST"
         AttributeDefinitions:
           - AttributeName: "id"
             AttributeType: "S"
-          - AttributeName: "members"
-            AttributeType: "SS"
-          - AttributeName: "created_at"
-            AttributeType: "S"
           - AttributeName: "updated_at"
             AttributeType: "S"
+          # - AttributeName: "created_at"
+          #   AttributeType: "S"
+          # - AttributeName: "members"
+          #   AttributeType: "SS"
         KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
           - AttributeName: "updated_at"
             KeyType: "RANGE"
         Tags:
-          - random-voice-tinder
-    NewResource:
+          - Key: service
+            Value: random-voice-tinder
+    DynamoMessages:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: "random-voice-tinder-messages"
+        BillingMode: "PAY_PER_REQUEST"
         AttributeDefinitions:
           - AttributeName: "id"
             AttributeType: "S"
-          - AttributeName: "chat_id"
-            AttributeType: "SS"
-          - AttributeName: "sender_id"
-            AttributeType: "S"
           - AttributeName: "created_at"
             AttributeType: "S"
-          - AttributeName: "audio_message"
-            AttributeType: "S"
-          - AttributeName: "time"
-            AttributeType: "N"
+          # - AttributeName: "chat_id"
+          #   AttributeType: "SS"
+          # - AttributeName: "sender_id"
+          #   AttributeType: "S"
+          # - AttributeName: "audio_message"
+          #   AttributeType: "S"
+          # - AttributeName: "time"
+          #   AttributeType: "N"
         KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
           - AttributeName: "created_at"
             KeyType: "RANGE"
         Tags:
-          - random-voice-tinder
+          - Key: service
+            Value: random-voice-tinder
