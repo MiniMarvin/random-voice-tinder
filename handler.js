@@ -1,9 +1,9 @@
 'use strict';
 
-const { default: audioService } = require("./audio-service");
-const { default: authenticate, unauthPayload } = require("./auth");
+const { audioService } = require("./audio-service");
+const { authenticate, unauthPayload } = require("./auth");
 const localAudioService = audioService(process.env.AWS_REGION)
-const { uuid } = require('uuidv4')
+const { v4: uuid } = require('uuid')
 
 module.exports.hello = async (event) => {
   return {

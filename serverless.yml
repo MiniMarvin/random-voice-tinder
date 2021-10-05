@@ -9,13 +9,13 @@ frameworkVersion: '2'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   lambdaHashingVersion: 20201221
   stage: dev
   region: us-east-1
   environment:
-    AWS_REGION: ${self:provider.region}
-    AUDIO_BUCKET: ${self:resources.Resources.AudiosBucket.Properties.BucketName}
+    # AWS_USED_REGION: ${self:provider.region}
+    AUDIOS_BUCKET: ${self:resources.Resources.AudiosBucket.Properties.BucketName}
     USERS_TABLE: ${self:resources.Resources.UsersTable.Properties.TableName}
     CHATS_TABLE: ${self:resources.Resources.ChatsTable.Properties.TableName}
     MESSAGES_TABLE: ${self:resources.Resources.MessagesTable.Properties.TableName}
@@ -46,8 +46,20 @@ provider:
 functions:
   hello:
     handler: handler.hello
+    memorySize: 128
+    description: Returns a welcome message
+    events:
+      - http:
+          path: hello
+          method: get
   putAudioAuth:
     handler: handler.putAudioAuth
+    memorySize: 128
+    description: Returns a link for uploading a file to s3.
+    events:
+      - http:
+          path: audios/upload
+          method: get
   
 
 # you can add CloudFormation resource templates here

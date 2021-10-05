@@ -1,6 +1,6 @@
 // Reference: https://aws.amazon.com/pt/blogs/compute/uploading-to-amazon-s3-directly-from-a-web-or-mobile-application/
 'use strict'
-const audioService = (region) => {
+module.exports.audioService = (region) => {
   const AWS = require('aws-sdk')
   AWS.config.update({ region: region })
   const s3 = new AWS.S3()
@@ -36,6 +36,8 @@ const audioService = (region) => {
       path: Key
     })
   }
-}
 
-export default audioService
+  return {
+    getSignedURL
+  }
+}

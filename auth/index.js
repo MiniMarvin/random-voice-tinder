@@ -1,9 +1,9 @@
-const authenticate = (token) => {
+module.exports.authenticate = (token) => {
   console.log(JSON.stringify(token))
   return true;
 }
 
-const unauthPayload = () => {
+module.exports.unauthPayload = () => {
   return {
     statusCode: 403,
     body: JSON.stringify(
@@ -15,6 +15,3 @@ const unauthPayload = () => {
     ),
   }
 }
-
-export {unauthPayload}
-export default authenticate

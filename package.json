@@ -1,0 +1,29 @@
+{
+  "name": "random-voice-tinder",
+  "version": "1.0.0",
+  "description": "A tinder made of random people with their own voices",
+  "main": "handler.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.999.0",
+    "jest": "^27.2.4",
+    "uuid": "^8.3.2",
+    "uuidv4": "^6.2.12"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MiniMarvin/random-voice-tinder.git"
+  },
+  "author": "Caio Moreira Gomes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MiniMarvin/random-voice-tinder/issues"
+  },
+  "homepage": "https://github.com/MiniMarvin/random-voice-tinder#readme"
+}
