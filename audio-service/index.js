@@ -31,10 +31,10 @@ module.exports.audioService = (region) => {
     const action = shouldUpload ? 'putObject' : 'getObject'
     const uploadURL = await s3.getSignedUrlPromise(action, s3Params)
 
-    return JSON.stringify({
+    return {
       uploadURL: uploadURL,
       path: Key
-    })
+    }
   }
 
   return {

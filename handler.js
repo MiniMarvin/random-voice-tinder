@@ -25,7 +25,7 @@ module.exports.putAudioAuth = async (event) => {
     return unauthPayload()
   }
 
-  const filePath = `public/${uuid()}.json`
+  const filePath = `public/${uuid()}.mp3`
   // TODO: get audio type
   const contentType = 'audio/mpeg'
   const shouldUpload = true
