@@ -9,10 +9,16 @@
   "dependencies": {
     "aws-sdk": "^2.999.0",
     "jest": "^27.2.4",
+    "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.5",
+    "node-fetch": "^3.0.0",
+    "request": "^2.88.2",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.12"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "amazon-cognito-identity-js": "^5.2.1"
+  },
   "scripts": {
     "test": "jest"
   },

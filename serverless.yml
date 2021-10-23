@@ -19,6 +19,7 @@ provider:
     USERS_TABLE: ${self:resources.Resources.UsersTable.Properties.TableName}
     CHATS_TABLE: ${self:resources.Resources.ChatsTable.Properties.TableName}
     MESSAGES_TABLE: ${self:resources.Resources.MessagesTable.Properties.TableName}
+    USER_POOL: random-voice-tinder-users
   iamRoleStatements:
     # TODO: restrict the policy to only the used resources on specific lambda
     - Effect: 'Allow'
@@ -33,15 +34,6 @@ provider:
         - s3:PutObjectAcl
         - s3:GetObject
       Resource: '*'
-
-# you can add packaging information here
-#package:
-#  include:
-#    - include-me.js
-#    - include-me-dir/**
-#  exclude:
-#    - exclude-me.js
-#    - exclude-me-dir/**
 
 functions:
   hello:
@@ -60,6 +52,22 @@ functions:
       - http:
           path: audios/upload
           method: get
+  signUp:
+    handler: handler.signUp
+    memorySize: 128
+    description: Create an account for an user
+    events:
+      - http:
+          path: auth/signup
+          method: post
+  signIn:
+    handler: handler.signIn
+    memorySize: 128
+    description: Login registered user
+    events:
+      - http:
+          path: auth/signin
+          method: post
   
 
 # you can add CloudFormation resource templates here
@@ -138,3 +146,4 @@ resources:
         Tags:
           - Key: service
             Value: random-voice-tinder
+

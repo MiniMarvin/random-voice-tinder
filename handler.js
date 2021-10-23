@@ -1,7 +1,7 @@
 'use strict';
 
 const { audioService } = require("./audio-service");
-const { authenticate, unauthPayload } = require("./auth");
+const { validateToken, unauthPayload, signUpUser, signInUser } = require("./auth");
 const localAudioService = audioService(process.env.AWS_REGION)
 const { v4: uuid } = require('uuid')
 
@@ -20,7 +20,8 @@ module.exports.hello = async (event) => {
 }
 
 module.exports.putAudioAuth = async (event) => {
-  const auth = authenticate(event?.headers?.Authorization)
+  // const auth = validateToken(event?.headers?.Authorization)
+  const auth = true
   if (!auth) {
     return unauthPayload()
   }
@@ -33,5 +34,36 @@ module.exports.putAudioAuth = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify(signedPayload)
+  }
+}
+
+module.exports.signUp = async (event) => {
+  const body = JSON.parse(event.body)
+  const username = body.username
+  const email = body.email
+  const password = body.password
+  const user = await signUpUser(username, email, password)
+  return {
+    statusCode: 200,
+    body: JSON.stringify(
+      { user: user, },
+      null,
+      2
+    ),
+  }
+}
+
+module.exports.signIn = async (event) => {
+  const body = JSON.parse(event.body)
+  const username = body.username
+  const password = body.password
+  const token = await signInUser(username, password)
+  return {
+    statusCode: 200,
+    body: JSON.stringify(
+      { token: token, },
+      null,
+      2
+    ),
   }
 }
