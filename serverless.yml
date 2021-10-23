@@ -6,6 +6,10 @@ org: minimarvin
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 frameworkVersion: '2'
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -14,12 +18,14 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    # AWS_USED_REGION: ${self:provider.region}
     AUDIOS_BUCKET: ${self:resources.Resources.AudiosBucket.Properties.BucketName}
     USERS_TABLE: ${self:resources.Resources.UsersTable.Properties.TableName}
     CHATS_TABLE: ${self:resources.Resources.ChatsTable.Properties.TableName}
     MESSAGES_TABLE: ${self:resources.Resources.MessagesTable.Properties.TableName}
     USER_POOL: random-voice-tinder-users
+    USER_POOL_ID: ${env:USER_POOL_ID}
+    APP_CLIENT_ID: ${env:APP_CLIENT_ID}
+    POOL_REGION: ${env:POOL_REGION}
   iamRoleStatements:
     # TODO: restrict the policy to only the used resources on specific lambda
     - Effect: 'Allow'
@@ -64,6 +70,7 @@ functions:
     handler: handler.signIn
     memorySize: 128
     description: Login registered user
+    timeout: 15
     events:
       - http:
           path: auth/signin

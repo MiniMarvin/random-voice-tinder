@@ -1,7 +1,7 @@
 'use strict';
 
 const { audioService } = require("./audio-service");
-const { validateToken, unauthPayload, signUpUser, signInUser } = require("./auth");
+const { validateToken, unauthPayload, signUpUser, signInUser } = require("./auth/index.js");
 const localAudioService = audioService(process.env.AWS_REGION)
 const { v4: uuid } = require('uuid')
 

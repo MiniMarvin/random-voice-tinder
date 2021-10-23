@@ -1,15 +1,6 @@
-// setup the necessary browser environment for the cognito lib to work
-global.fetch = require('node-fetch')
-global.navigator = () => null
-
 // setup the cognito login lib
 require('cross-fetch/polyfill');
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
-
-// JWT verification
-const jwt = require('jsonwebtoken');
-const jwkToPem = require('jwk-to-pem');
-const pem = jwkToPem(jwk);
 
 const poolData = {
   UserPoolId: `${process.env.USER_POOL_ID}`,
