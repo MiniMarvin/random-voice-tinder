@@ -50,6 +50,24 @@ functions:
       - http:
           path: hello
           method: get
+  helloAuth:
+    handler: handler.hello
+    memorySize: 128
+    description: Returns a welcome message but only if authorized
+    events:
+      - http:
+          path: auth/hello
+          method: get
+          authorizer:
+            name: cognitoAuthorization
+            type: COGNITO_USER_POOLS
+            # identitySource: method.request.header.Authorization
+            arn: 
+              Fn::Join:
+                - ""
+                - - "arn:aws:cognito-idp:us-east-1:"
+                  - Ref: AWS::AccountId
+                  - ":userpool/${env:USER_POOL_ID}"
   putAudioAuth:
     handler: handler.putAudioAuth
     memorySize: 128
@@ -75,6 +93,15 @@ functions:
       - http:
           path: auth/signin
           method: post
+  validateToken:
+    handler: handler.unpackToken
+    memorySize: 128
+    description: Login registered user
+    timeout: 15
+    events:
+      - http:
+          path: auth/validate
+          method: get
   
 
 # you can add CloudFormation resource templates here

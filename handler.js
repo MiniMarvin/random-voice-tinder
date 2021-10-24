@@ -53,15 +53,24 @@ module.exports.signUp = async (event) => {
   }
 }
 
+module.exports.unpackToken = async (event) => {
+  const token = event.headers.Authorization.replace('Bearer ', '')
+  const payload = await validateToken(token)
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ payload: payload }, null, 2)
+  }
+}
+
 module.exports.signIn = async (event) => {
   const body = JSON.parse(event.body)
   const username = body.username
   const password = body.password
-  const token = await signInUser(username, password)
+  const tokens = await signInUser(username, password)
   return {
     statusCode: 200,
     body: JSON.stringify(
-      { token: token, },
+      tokens,
       null,
       2
     ),

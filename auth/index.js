@@ -1,6 +1,8 @@
 // setup the cognito login lib
 require('cross-fetch/polyfill');
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+const jwt = require('jsonwebtoken')
+const request = require('request')
 
 const poolData = {
   UserPoolId: `${process.env.USER_POOL_ID}`,
@@ -9,50 +11,11 @@ const poolData = {
 const poolRegion = `${process.env.POOL_REGION}`;
 const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-module.exports.validateToken = (token) => {
-  return new Promise((acc, rej) => {
-    request({
-      url: `https://cognitoidp.${poolRegion}.amazonaws.com/${poolData.UserPoolId}/.well-known/jwks.json`,
-      json: true
-    }, (error, response, body) => {
-      if (error || response.statusCode !== 200) {
-        rej(error)
-        return
-      }
-
-      const decodedJwt = jwt.decode(token, { complete: true })
-      if (!decodedJwt) {
-        rej('Not a valid JWT token')
-        return
-      }
-
-      const kid = decodedJwt.header.kid
-      const keys = body['keys']
-      const pems = keys.filter((key => key.kid === kid))
-        .map(key => jwkToPem({ kty: key.kty, n: key.n, e: key.e }))
-
-      const pem = pems[0]
-      if (!pem) {
-        rej('Invalid token')
-        return
-      }
-
-      jwt.verify(token, pem, function (err, payload) {
-        if (err) {
-          rej('Invalid token')
-        } else {
-          acc("Valid token")
-        }
-      })
-    })
-  })
-}
-
 /**
  * 
  * @param {string} name username.
  * @param {string} password user password.
- * @returns {string}
+ * @returns {{access_token: string, identity_token: string}}
  */
 module.exports.signInUser = (name, password) => {
   const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
@@ -69,8 +32,9 @@ module.exports.signInUser = (name, password) => {
   return new Promise((acc, rej) => {
     user.authenticateUser(authenticationDetails, {
       onSuccess: (res) => {
-        const token = res.getAccessToken().getJwtToken()
-        acc(token)
+        const access_token = res.getAccessToken().getJwtToken()
+        const identity_token = res.getIdToken().getJwtToken()
+        acc({ access_token, identity_token })
       },
       onFailure: (err) => {
         rej(err)
