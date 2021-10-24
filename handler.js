@@ -1,9 +1,11 @@
 'use strict';
 
 const { audioService } = require("./audio-service");
-const { validateToken, unauthPayload, signUpUser, signInUser } = require("./auth/index.js");
-const localAudioService = audioService(process.env.AWS_REGION)
+const { globalProfileService } = require('./profile-service')
+const { unauthPayload, signUpUser, signInUser } = require("./auth/index.js");
 const { v4: uuid } = require('uuid')
+const localAudioService = audioService(process.env.AWS_REGION)
+const profileService = globalProfileService(process.env.AWS_REGION)
 
 module.exports.hello = async (event) => {
   return {
@@ -53,15 +55,6 @@ module.exports.signUp = async (event) => {
   }
 }
 
-module.exports.unpackToken = async (event) => {
-  const token = event.headers.Authorization.replace('Bearer ', '')
-  const payload = await validateToken(token)
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ payload: payload }, null, 2)
-  }
-}
-
 module.exports.signIn = async (event) => {
   const body = JSON.parse(event.body)
   const username = body.username
@@ -75,4 +68,9 @@ module.exports.signIn = async (event) => {
       2
     ),
   }
+}
+
+// TODO: separate the http handler from the non http handlers or separate by domain
+module.exports.enqueueUserCreation = async (event) => {
+  await profileService.enqueueProfileCreation(event)
 }

@@ -26,6 +26,7 @@ provider:
     USER_POOL_ID: ${env:USER_POOL_ID}
     APP_CLIENT_ID: ${env:APP_CLIENT_ID}
     POOL_REGION: ${env:POOL_REGION}
+    USER_CREATION_QUEUE: ${self:resources.Resources.UserCreationQueue.Properties.QueueName}
   iamRoleStatements:
     # TODO: restrict the policy to only the used resources on specific lambda
     - Effect: 'Allow'
@@ -93,16 +94,15 @@ functions:
       - http:
           path: auth/signin
           method: post
-  validateToken:
-    handler: handler.unpackToken
+  enqueueUserCreation:
+    handler: handler.enqueueUserCreation
     memorySize: 128
-    description: Login registered user
-    timeout: 15
+    description: enqueue user creation event, so the service can retry to create the user
     events:
-      - http:
-          path: auth/validate
-          method: get
-  
+      - cognitoUserPool:
+          pool: ${self:provider.environment.USER_POOL}
+          trigger: PostConfirmation
+
 
 # you can add CloudFormation resource templates here
 resources:
@@ -110,14 +110,14 @@ resources:
     AudiosBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: random-voice-tinder-audios
+        BucketName: ${opt:stage, self:provider.stage}-${self:service}-audios
         Tags:
           - Key: service
-            Value: random-voice-tinder
+            Value: ${self:service}
     UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: "random-voice-tinder-users"
+        TableName: ${opt:stage, self:provider.stage}-${self:service}-users
         BillingMode: "PAY_PER_REQUEST"
         AttributeDefinitions:
           - AttributeName: "id"
@@ -131,11 +131,11 @@ resources:
             KeyType: "HASH"
         Tags:
           - Key: service
-            Value: random-voice-tinder
+            Value: ${self:service}
     ChatsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: "random-voice-tinder-chats"
+        TableName: ${opt:stage, self:provider.stage}-${self:service}-chats
         BillingMode: "PAY_PER_REQUEST"
         AttributeDefinitions:
           - AttributeName: "id"
@@ -153,11 +153,11 @@ resources:
             KeyType: "RANGE"
         Tags:
           - Key: service
-            Value: random-voice-tinder
+            Value: ${self:service}
     MessagesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: "random-voice-tinder-messages"
+        TableName: ${opt:stage, self:provider.stage}-${self:service}-messages
         BillingMode: "PAY_PER_REQUEST"
         AttributeDefinitions:
           - AttributeName: "id"
@@ -179,5 +179,25 @@ resources:
             KeyType: "RANGE"
         Tags:
           - Key: service
-            Value: random-voice-tinder
-
+            Value: ${self:service}
+    UserCreationQueue:
+      Type: 'AWS::SQS::Queue'
+      Properties:
+        QueueName: ${opt:stage, self:provider.stage}-${self:service}-user-creation
+        DelaySeconds: 600
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - UserCreationQueueDLQ
+              - Arn
+          maxReceiveCount: 4
+        Tags:
+          - Key: service
+            Value: ${self:service}
+    UserCreationQueueDLQ:
+      Type: 'AWS::SQS::Queue'
+      Properties:
+        QueueName: ${opt:stage, self:provider.stage}-${self:service}-user-creation-dlq
+        Tags:
+          - Key: service
+            Value: ${self:service}
