@@ -1,11 +1,11 @@
 'use strict';
 
 const { audioService } = require("./audio-service");
-const { globalProfileService } = require('./profile-service')
+const { profileService } = require('./profile-service')
 const { unauthPayload, signUpUser, signInUser } = require("./auth/index.js");
 const { v4: uuid } = require('uuid')
 const localAudioService = audioService(process.env.AWS_REGION)
-const profileService = globalProfileService(process.env.AWS_REGION)
+const localProfileService = profileService(process.env.AWS_REGION)
 
 module.exports.hello = async (event) => {
   return {
@@ -72,5 +72,5 @@ module.exports.signIn = async (event) => {
 
 // TODO: separate the http handler from the non http handlers or separate by domain
 module.exports.enqueueUserCreation = async (event) => {
-  await profileService.enqueueProfileCreation(event)
+  await localProfileService.enqueueProfileCreation(event)
 }
