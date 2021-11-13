@@ -1,6 +1,6 @@
 // Reference: https://aws.amazon.com/pt/blogs/compute/uploading-to-amazon-s3-directly-from-a-web-or-mobile-application/
 'use strict'
-module.exports.audioService = (region) => {
+module.exports.audioServiceFactory = (region) => {
   const AWS = require('aws-sdk')
   AWS.config.update({ region: region })
   const s3 = new AWS.S3()

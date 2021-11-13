@@ -44,6 +44,7 @@ provider:
 
 functions:
   hello:
+    name: ${opt:stage, self:provider.stage}-${self:service}-hello
     handler: handler.hello
     memorySize: 128
     description: Returns a welcome message
@@ -52,6 +53,7 @@ functions:
           path: hello
           method: get
   helloAuth:
+    name: ${opt:stage, self:provider.stage}-${self:service}-helloAuth
     handler: handler.hello
     memorySize: 128
     description: Returns a welcome message but only if authorized
@@ -62,7 +64,6 @@ functions:
           authorizer:
             name: cognitoAuthorization
             type: COGNITO_USER_POOLS
-            # identitySource: method.request.header.Authorization
             arn: 
               Fn::Join:
                 - ""
@@ -70,6 +71,7 @@ functions:
                   - Ref: AWS::AccountId
                   - ":userpool/${env:USER_POOL_ID}"
   putAudioAuth:
+    name: ${opt:stage, self:provider.stage}-${self:service}-putAudioAuth
     handler: handler.putAudioAuth
     memorySize: 128
     description: Returns a link for uploading a file to s3.
@@ -78,6 +80,7 @@ functions:
           path: audios/upload
           method: get
   signUp:
+    name: ${opt:stage, self:provider.stage}-${self:service}-signUp
     handler: handler.signUp
     memorySize: 128
     description: Create an account for an user
@@ -86,6 +89,7 @@ functions:
           path: auth/signup
           method: post
   signIn:
+    name: ${opt:stage, self:provider.stage}-${self:service}-signIn
     handler: handler.signIn
     memorySize: 128
     description: Login registered user
@@ -95,6 +99,7 @@ functions:
           path: auth/signin
           method: post
   enqueueUserCreation:
+    name: ${opt:stage, self:provider.stage}-${self:service}-enqueueUserCreation
     handler: handler.enqueueUserCreation
     memorySize: 128
     description: enqueue user creation event, so the service can retry to create the user
@@ -103,7 +108,19 @@ functions:
           pool: ${self:provider.environment.USER_POOL}
           trigger: PostConfirmation
           existing: true
-
+  createUserOnDB:
+    name: ${opt:stage, self:provider.stage}-${self:service}-createUserOnDB
+    handler: handler.createUserOnDB
+    memorySize: 128
+    description: trigger the creation of a user profile on database after the authentication is complete on cognito
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - UserCreationQueue
+              - Arn
+          batchSize: 10
+          maximumBatchingWindow: 1
 
 # you can add CloudFormation resource templates here
 resources:
@@ -202,3 +219,4 @@ resources:
         Tags:
           - Key: service
             Value: ${self:service}
+    
