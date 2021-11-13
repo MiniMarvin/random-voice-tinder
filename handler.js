@@ -74,6 +74,7 @@ module.exports.signIn = async (event) => {
 module.exports.enqueueUserCreation = async (event) => {
   console.log(JSON.stringify(event))
   await profileService.enqueueProfileCreation(event)
+  return event
 }
 
 module.exports.createUserOnDB = async (event) => {

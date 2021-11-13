@@ -26,7 +26,7 @@ provider:
     USER_POOL_ID: ${env:USER_POOL_ID}
     APP_CLIENT_ID: ${env:APP_CLIENT_ID}
     POOL_REGION: ${env:POOL_REGION}
-    USER_CREATION_QUEUE: ${self:resources.Resources.UserCreationQueue.Properties.QueueName}
+    USER_CREATION_QUEUE: !Ref UserCreationQueue
   iamRoleStatements:
     # TODO: restrict the policy to only the used resources on specific lambda
     - Effect: 'Allow'
@@ -40,6 +40,8 @@ provider:
         - s3:PutObject
         - s3:PutObjectAcl
         - s3:GetObject
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
       Resource: '*'
 
 functions:
